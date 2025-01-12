@@ -4,7 +4,7 @@ import dash
 import dash_bootstrap_components as dbc
 from flask import Flask
 
-import package_name as proj
+import geojson_mapper as proj
 
 def create_dash_app(server: Flask, url_base_pathname: str = "/"):
     """
