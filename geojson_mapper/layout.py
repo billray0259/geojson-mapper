@@ -5,42 +5,42 @@ import dash_leaflet as dl
 import json
 from shapely.geometry import shape
 from dash import dcc
+from .naiop_challenge_map import get_geojson
 
 def create_layout():
     
-    with open('map.geojson') as f:
-        geojson = json.load(f)
+    geojson = get_geojson()
     
-        geojson_layer = []
-        centroids = []
-        latitudes = []
-        longitudes = []
-        
-        for feature in geojson['features']:
-            feature_component = dl.GeoJSON(
-                data=feature,
-                children=dl.Tooltip(content=feature['properties']['description'])
+    geojson_layer = []
+    centroids = []
+    latitudes = []
+    longitudes = []
+    
+    for feature in geojson['features']:
+        feature_component = dl.GeoJSON(
+            data=feature,
+            children=dl.Tooltip(content=feature['properties']['description'])
+        )
+        if 'icon' in feature['properties']:
+            feature_component = dl.Marker(
+                position=[feature['geometry']['coordinates'][1], feature['geometry']['coordinates'][0]],
+                children=[
+                    dl.Tooltip(content=feature['properties']['name']),
+                    dl.Popup(content=feature['properties']['description'])
+                ],
+                icon=feature['properties']['icon']
             )
-            if 'icon' in feature['properties']:
-                feature_component = dl.Marker(
-                    position=[feature['geometry']['coordinates'][1], feature['geometry']['coordinates'][0]],
-                    children=[
-                        dl.Tooltip(content=feature['properties']['name']),
-                        dl.Popup(content=feature['properties']['description'])
-                    ],
-                    icon=feature['properties']['icon']
-                )
-            geojson_layer.append(
-                feature_component
-            )
-            geom = shape(feature['geometry'])
-            centroids.append(geom.centroid)
-            bounds = geom.bounds
-            longitudes.extend([bounds[0], bounds[2]])
-            latitudes.extend([bounds[1], bounds[3]])
-        
-        avg_lat = sum(centroid.y for centroid in centroids) / len(centroids)
-        avg_lon = sum(centroid.x for centroid in centroids) / len(centroids)
+        geojson_layer.append(
+            feature_component
+        )
+        geom = shape(feature['geometry'])
+        centroids.append(geom.centroid)
+        bounds = geom.bounds
+        longitudes.extend([bounds[0], bounds[2]])
+        latitudes.extend([bounds[1], bounds[3]])
+    
+    avg_lat = sum(centroid.y for centroid in centroids) / len(centroids)
+    avg_lon = sum(centroid.x for centroid in centroids) / len(centroids)
     
     return dbc.Container([
         dbc.Row([
