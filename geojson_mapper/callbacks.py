@@ -34,10 +34,15 @@ def register_callbacks(app):
         longitudes = []
         
         for feature in geojson['features']:
-            feature_component = dl.GeoJSON(
-                data=feature,
-                children=dl.Tooltip(content=feature['properties']['description'])
-            )
+            if 'description' in feature['properties']:
+                feature_component = dl.GeoJSON(
+                    data=feature,
+                    children=dl.Tooltip(content=feature['properties']['description'])
+                )
+            else:
+                feature_component = dl.GeoJSON(
+                    data=feature
+                )
             if 'icon' in feature['properties']:
                 feature_component = dl.Marker(
                     position=[feature['geometry']['coordinates'][1], feature['geometry']['coordinates'][0]],
