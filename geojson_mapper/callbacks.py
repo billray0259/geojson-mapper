@@ -23,10 +23,20 @@ def register_callbacks(app):
         try:
             decoded = base64.b64decode(content_string)
             geojson = json.loads(decoded)
-            if not 'features' in geojson:
-                return f"File {filename} is not a valid GeoJSON file.", no_update, no_update, no_update, no_update
+            if 'features' not in geojson:
+                return (
+                    f"File {filename} is not a valid GeoJSON file.",
+                    no_update,
+                    no_update,
+                    no_update,
+                )
         except Exception as e:
-            return f"Error processing {filename}: {str(e)}", no_update, no_update, no_update, no_update
+            return (
+                f"Error processing {filename}: {str(e)}",
+                no_update,
+                no_update,
+                no_update,
+            )
     
         geojson_layer = []
         centroids = []
