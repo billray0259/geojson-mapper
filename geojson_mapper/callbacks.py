@@ -38,6 +38,10 @@ def register_callbacks(app):
                 no_update,
             )
     
+        # Return early if the features list is empty
+        if not geojson.get('features'):
+            return no_update, no_update, no_update, no_update
+
         geojson_layer = []
         centroids = []
         latitudes = []
