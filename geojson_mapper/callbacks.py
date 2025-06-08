@@ -71,6 +71,15 @@ def register_callbacks(app):
             longitudes.extend([bounds[0], bounds[2]])
             latitudes.extend([bounds[1], bounds[3]])
         
+
+        if not centroids:
+            return (
+                f"No features found in {filename}.",
+                no_update,
+                no_update,
+                no_update,
+            )
+
         avg_lat = sum(centroid.y for centroid in centroids) / len(centroids)
         avg_lon = sum(centroid.x for centroid in centroids) / len(centroids)
         
