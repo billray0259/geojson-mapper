@@ -8,6 +8,7 @@ def create_layout():
     return dbc.Container([
         dbc.Row([
             dbc.Col([
+                dcc.Store(id='layers-store', data=[]),
                 dcc.Upload(
                     id='upload-data',
                     children='Drag and Drop or Click to Select a File',
@@ -21,8 +22,9 @@ def create_layout():
                         'textAlign': 'center',
                         'margin': '10px'
                     },
-                    multiple=False
+                    multiple=True
                 ),
+                html.Button('Clear Map', id='clear-map', n_clicks=0),
                 dl.Map(id='map', style={'width': '100%', 'height': '750px'}, center=[37.0902, -95.7129], zoom=4, children=[
                     dl.TileLayer(),
                     dl.LayerGroup(id='geojson-layer')
