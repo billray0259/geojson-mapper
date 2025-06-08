@@ -48,28 +48,34 @@ def register_callbacks(app):
         longitudes = []
         
         for feature in geojson['features']:
-            if 'description' in feature['properties']:
-                feature_component = dl.GeoJSON(
-                    data=feature,
-                    children=dl.Tooltip(content=feature['properties']['description'])
+            try:
+                if 'description' in feature['properties']:
+                    feature_component = dl.GeoJSON(
+                        data=feature,
+                        children=dl.Tooltip(content=feature['properties']['description'])
+                    )
+                else:
+                    feature_component = dl.GeoJSON(
+                        data=feature
+                    )
+                if 'icon' in feature['properties']:
+                    feature_component = dl.Marker(
+                        position=[feature['geometry']['coordinates'][1], feature['geometry']['coordinates'][0]],
+                        children=[
+                            dl.Tooltip(content=feature['properties']['name']),
+                            dl.Popup(content=feature['properties']['description'])
+                        ],
+                        icon=feature['properties']['icon']
+                    )
+                geojson_layer.append(feature_component)
+                geom = shape(feature['geometry'])
+            except Exception as e:
+                return (
+                    f"Error processing {filename}: {str(e)}",
+                    no_update,
+                    no_update,
+                    no_update,
                 )
-            else:
-                feature_component = dl.GeoJSON(
-                    data=feature
-                )
-            if 'icon' in feature['properties']:
-                feature_component = dl.Marker(
-                    position=[feature['geometry']['coordinates'][1], feature['geometry']['coordinates'][0]],
-                    children=[
-                        dl.Tooltip(content=feature['properties']['name']),
-                        dl.Popup(content=feature['properties']['description'])
-                    ],
-                    icon=feature['properties']['icon']
-                )
-            geojson_layer.append(
-                feature_component
-            )
-            geom = shape(feature['geometry'])
             centroids.append(geom.centroid)
             bounds = geom.bounds
             longitudes.extend([bounds[0], bounds[2]])
